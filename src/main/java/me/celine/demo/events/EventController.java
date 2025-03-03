@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.net.URI;
-
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 
 @Controller
@@ -19,7 +18,6 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 public class EventController {
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
-
     private final EventRepository eventRepository;
 
     public EventController(EventRepository eventRepository) {
@@ -30,7 +28,6 @@ public class EventController {
     public ResponseEntity createEvent(@RequestBody Event event) {
 
         Event newEvent = this.eventRepository.save(event);
-
         logger.info("[logger] Saved Event: {}", newEvent);
 
         URI createdUri = linkTo(EventController.class).slash(newEvent.getId()).toUri();
