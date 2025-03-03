@@ -1,6 +1,7 @@
 package me.celine.demo.events;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.celine.demo.common.TestDescription;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,6 +35,7 @@ public class EventControllerTests {
     ObjectMapper objectMapper;
 
     @Test
+    @TestDescription("정상적으로 event를 생성하 테스트")
     public void createEvent() throws Exception {
         EventDto event = EventDto.builder()
                 .name("Spring")
@@ -67,6 +69,7 @@ public class EventControllerTests {
 
 
     @Test
+    @TestDescription("EventDto에 해당되지 않는 값이 포함된 채로 들어왔을 때 오류를 반환하는 테스트(appication.properties의 deserialization 설정으로 구현)")
     public void create_Bad_Event() throws Exception {
         Event event = Event.builder()
                 .id(100)
@@ -95,8 +98,8 @@ public class EventControllerTests {
         ;
     }
 
-    // EventDto 에 아무것도 들어있지 않을 때 400 반환하는지 테스트
     @Test
+    @TestDescription("EventDto이 비어있을 때 400 오류를 반환하는지 확인하는 테스트")
     public void createEvent_Bad_Request_empty() throws Exception {
         EventDto eventDto = EventDto.builder().build();
         this.mockMvc.perform(post("/api/events")
@@ -106,8 +109,8 @@ public class EventControllerTests {
         ;
     }
 
-    // 이상한 값인 경우 - 시작일보다 마감일이 빠르다든지
     @Test
+    @TestDescription("입력 값이 잘못된 경우(시작일보다 마감일이 빠르다든지) 400 오류를 반환하는지 확인하는 테스트")
     public void create_Bad_Event_Wrong_Input() throws Exception {
         EventDto eventDto = EventDto.builder()
                 .name("Spring")
