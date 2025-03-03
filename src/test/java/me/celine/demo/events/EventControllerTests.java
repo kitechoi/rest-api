@@ -105,4 +105,27 @@ public class EventControllerTests {
                 .andExpect(status().isBadRequest())
         ;
     }
+
+    // 이상한 값인 경우 - 시작일보다 마감일이 빠르다든지
+    @Test
+    public void create_Bad_Event_Wrong_Input() throws Exception {
+        EventDto eventDto = EventDto.builder()
+                .name("Spring")
+                .description("spring comment")
+                .beginEnrollmentDateTime(LocalDateTime.of(2025,3,26, 14,18))
+                .closeEnrollmentDateTime(LocalDateTime.of(2025,3,25,14,18))
+                .beginEventDateTime(LocalDateTime.of(2025,3,24, 15,0))
+                .endEventDateTime(LocalDateTime.of(2025,3,23,15,5))
+                .basePrice(10000)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역")
+                .build();
+
+        this.mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest())
+        ;
+    }
 }
