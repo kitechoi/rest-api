@@ -35,8 +35,7 @@ public class EventControllerTests {
 
     @Test
     public void createEvent() throws Exception {
-        Event event = Event.builder()
-                .id(100)
+        EventDto event = EventDto.builder()
                 .name("Spring")
                 .description("spring comment")
                 .beginEnrollmentDateTime(LocalDateTime.of(2025,3,1, 14,18))
@@ -47,9 +46,6 @@ public class EventControllerTests {
                 .maxPrice(200)
                 .limitOfEnrollment(100)
                 .location("강남역")
-                .free(true)
-                .offline(false)
-                .eventStatus(EventStatus.PUBLISHED)
                 .build();
 //        event.setId(10);
 //        Mockito.when(eventRepository.save(event)).thenReturn(event);
@@ -67,5 +63,46 @@ public class EventControllerTests {
                 .andExpect(jsonPath("id").value(Matchers.not(100)))
                 .andExpect(jsonPath("free").value(Matchers.not(true)))
                 .andExpect(jsonPath("eventStatus").value(EventStatus.DRAFT.name()));
+    }
+
+
+    @Test
+    public void create_Bad_Event() throws Exception {
+        Event event = Event.builder()
+                .id(100)
+                .name("Spring")
+                .description("spring comment")
+                .beginEnrollmentDateTime(LocalDateTime.of(2025,3,1, 14,18))
+                .closeEnrollmentDateTime(LocalDateTime.of(2025,3,3,14,18))
+                .beginEventDateTime(LocalDateTime.of(2025,3,4,15,0))
+                .endEventDateTime(LocalDateTime.of(2025,3,6,15,5))
+                .basePrice(100)
+                .maxPrice(200)
+                .limitOfEnrollment(100)
+                .location("강남역")
+                .free(true)
+                .offline(false)
+                .eventStatus(EventStatus.PUBLISHED)
+                .build();
+
+        mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .accept(MediaTypes.HAL_JSON)
+                        .content(objectMapper.writeValueAsString(event))
+                )
+                .andDo(print()) // 어떤 요청을 받고, 응답을 줬는지 확인
+                .andExpect(status().isBadRequest())
+        ;
+    }
+
+    // EventDto 에 아무것도 들어있지 않을 때 400 반환하는지 테스트
+    @Test
+    public void createEvent_Bad_Request_empty() throws Exception {
+        EventDto eventDto = EventDto.builder().build();
+        this.mockMvc.perform(post("/api/events")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(this.objectMapper.writeValueAsString(eventDto)))
+                .andExpect(status().isBadRequest())
+        ;
     }
 }

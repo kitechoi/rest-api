@@ -1,7 +1,9 @@
 package me.celine.demo.events;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.Errors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.MediaTypes;
@@ -28,7 +30,10 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody EventDto eventDto) {
+    public ResponseEntity createEvent(@RequestBody @Valid EventDto eventDto, Errors errors) {
+        if (errors.hasErrors()) {
+            return ResponseEntity.badRequest().build();
+        }
         Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         logger.info("[logger] Saved Event: {}", newEvent);
