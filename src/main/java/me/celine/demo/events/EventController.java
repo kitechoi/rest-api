@@ -1,6 +1,7 @@
 package me.celine.demo.events;
 
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.hateoas.MediaTypes;
@@ -19,14 +20,16 @@ public class EventController {
 
     private static final Logger logger = LoggerFactory.getLogger(EventController.class);
     private final EventRepository eventRepository;
+    private final ModelMapper modelMapper;
 
-    public EventController(EventRepository eventRepository) {
+    public EventController(EventRepository eventRepository, ModelMapper modelMapper) {
         this.eventRepository = eventRepository;
+        this.modelMapper = modelMapper;
     }
 
     @PostMapping
-    public ResponseEntity createEvent(@RequestBody Event event) {
-
+    public ResponseEntity createEvent(@RequestBody EventDto eventDto) {
+        Event event = modelMapper.map(eventDto, Event.class);
         Event newEvent = this.eventRepository.save(event);
         logger.info("[logger] Saved Event: {}", newEvent);
 
